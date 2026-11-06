@@ -16,9 +16,11 @@ https://yllife-global.pages.dev
 - 双表单走 leads-api（POST https://lunasign.me/api/leads，
   site=yllife-global；source=trial / waitlist 分流；渠道归因读
   URL 的 ?src= 参数写入 note，无参数记 direct）。
-- $5 预订按钮当前为**意向登记**：收款账户（Stripe）待用户确定后，
-  把链接填进 index.html 脚本顶部的 PREORDER_PAYMENT_URL 常量并改
-  按钮行为；在此之前不产生任何收费。
+- $5 预订按钮已接真实 Stripe 链接（2026-11-06）：工具组账户
+  「gongju」下 plink_1UYjNbBKCxHty8taHkilkoEh，
+  https://buy.stripe.com/00w28q8fk3Nudk8dTrdQQ00（$5 一次性，
+  可全额退、抵 $15）；成功回跳 /?preorder=success，页面有成功
+  提示态。等候名单的 preorder_intent 意向字段保留（记未付款意向）。
 - **隐私强制项（方案定版）**：页面不装任何广告追踪像素与分析脚本
   （无 GA、无 51.la、无 Meta Pixel），统计只靠 leads 的 src 标记。
 
