@@ -224,8 +224,9 @@ footer.site{border-top:1px solid var(--line);margin-top:20px;padding:26px 0 34px
     <div class="card preorder">
       <div class="amt">$5 <small>预订金 · 正式上线抵 $15 · 随时全额退</small></div>
       <p style="margin-top:8px">付 $5 预订金，锁住早鸟价：正式版上线后可抵 $15 解读费用；改变主意，<b>随时全额退款</b>，不用给理由。</p>
-      <p style="margin-top:8px">验证期收款通道正在开通中，现在先<b>登记预订意向</b>：点下面按钮会跳到等候名单并自动勾好「愿意预付」，通道开通后我们第一时间邮件通知你补付——在那之前，<b>不会向你收取任何费用</b>。</p>
-      <p style="margin-top:16px"><button class="btn" id="preorderBtn" type="button" style="border:none;cursor:pointer">登记预订意向（$5）→</button></p>
+      <div id="preorderSuccess" style="display:none;margin-top:12px;background:#e8f5ec;border:1.5px solid #22713f;color:#1c5c33;border-radius:10px;padding:13px 15px;font-size:15.5px"><b>✅ 预订成功！</b>你的 $5 预订金已锁定早鸟名额（上线抵 $15）。我们会按你付款时留下的邮箱联系你，请留意邮件。</div>
+      <p style="margin-top:8px">点下面按钮会跳转到 Stripe 安全支付页完成付款。付完款，我们会按你付款时留的邮箱联系你确认名额。</p>
+      <p style="margin-top:16px"><button class="btn" id="preorderBtn" type="button" style="border:none;cursor:pointer">付 $5 预订金，锁定早鸟价 →</button></p>
     </div>
   </section>
 
@@ -281,7 +282,7 @@ footer.site{border-top:1px solid var(--line);margin-top:20px;padding:26px 0 34px
         <option value="other">其他</option>
         <option value="unknown">不确定</option>
       </select>
-      <label class="check"><input type="checkbox" id="w-preorder"><span>我愿意付 $5 预订金锁定早鸟价（抵 $15、随时全退；通道开通后邮件通知我补付）</span></label>
+      <label class="check"><input type="checkbox" id="w-preorder"><span>我有意向付 $5 预订金锁定早鸟价（抵 $15、随时全退）——先记下我的意向，方便时再付款</span></label>
       <input class="hp" type="text" id="w-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button type="submit" id="w-btn">加入等候名单</button>
       <div class="form-msg" id="w-msg" role="status"></div>
@@ -308,13 +309,23 @@ footer.site{border-top:1px solid var(--line);margin-top:20px;padding:26px 0 34px
   'use strict';
   var ENDPOINT='https://lunasign.me/api/leads';
   /* ============================================================
-     $5 预订收款链接【占位常量 · 待接】
-     收款账户（Stripe）由用户确定后，把支付链接填到这里，
-     并把下方 preorderBtn 的行为改为跳转该链接。
-     在此之前，按钮只做「登记预订意向」：滚动到等候名单表单
-     并自动勾选愿意预付，note 里带 preorder_intent=yes。
+     $5 预订收款链接（已接通 · 2026-11-06）
+     工具组 Stripe 账户「gongju」下的支付链接
+     plink_1UYjNbBKCxHty8taHkilkoEh（$5 一次性，可全额退、抵 $15）。
+     付款成功回跳 https://yllife-global.pages.dev/?preorder=success，
+     页面显示预订成功提示（见下方 preorder=success 处理）。
+     preorderBtn 点击直接跳转本链接。
      ============================================================ */
-  var PREORDER_PAYMENT_URL='';
+  var PREORDER_PAYMENT_URL='https://buy.stripe.com/00w28q8fk3Nudk8dTrdQQ00';
+
+  // 付款成功回跳提示态
+  if(new URLSearchParams(location.search).get('preorder')==='success'){
+    var ps=document.getElementById('preorderSuccess');
+    if(ps){
+      ps.style.display='block';
+      setTimeout(function(){ document.getElementById('preorder').scrollIntoView({behavior:'smooth',block:'start'}); },400);
+    }
+  }
 
   // 渠道来源标记：?src=xxx → 写入每条 lead 的 note；无参数记 direct
   var rawSrc=(new URLSearchParams(location.search).get('src')||'').toLowerCase();
@@ -397,7 +408,7 @@ footer.site{border-top:1px solid var(--line);margin-top:20px;padding:26px 0 34px
       if(data.status==='already'){
         wMsg.textContent='这个邮箱已经在等候名单里了，上线后会第一时间通知你。';
       }else if(pre){
-        wMsg.textContent='✅ 已加入等候名单，预订意向也登记好了！收款通道开通后，我们会邮件通知你补付 $5（在那之前不会收费）。';
+        wMsg.textContent='✅ 已加入等候名单，预订意向也登记好了！想现在就锁定名额，可以回到上方「早鸟预订」区直接付 $5。';
       }else{
         wMsg.textContent='✅ 已加入等候名单！正式版上线后会第一时间邮件通知你。';
       }
